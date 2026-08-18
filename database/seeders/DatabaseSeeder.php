@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\CarouselItem;
 use App\Models\CmsPage;
 use App\Models\GalleryItem;
+use App\Models\HomeStat;
 use App\Models\Post;
+use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -65,6 +68,35 @@ class DatabaseSeeder extends Seeder
 
         foreach ($gallery as $item) {
             GalleryItem::updateOrCreate(['title' => $item['title']], $item);
+        }
+
+        $carousel = [
+            ['title' => 'Posyandu Palem', 'subtitle' => 'Layanan kesehatan ibu, bayi, balita, dan lansia yang hangat dan terjadwal.', 'image_url' => 'https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1400&q=80', 'link_url' => '#jadwal', 'sort_order' => 1, 'is_active' => true],
+            ['title' => 'Ayo Ikut Penimbangan Rutin', 'subtitle' => 'Pantau tumbuh kembang si kecil setiap bulan bersama kader Posyandu.', 'image_url' => 'https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1400&q=80', 'link_url' => '#jadwal', 'sort_order' => 2, 'is_active' => true],
+        ];
+
+        foreach ($carousel as $slide) {
+            CarouselItem::updateOrCreate(['title' => $slide['title']], $slide);
+        }
+
+        $homeStats = [
+            ['value' => '150+', 'label' => 'Balita Terdaftar', 'sort_order' => 1],
+            ['value' => '12', 'label' => 'Kader Aktif', 'sort_order' => 2],
+            ['value' => '2x', 'label' => 'Kunjungan Bulanan', 'sort_order' => 3],
+            ['value' => '98%', 'label' => 'Cakupan Imunisasi', 'sort_order' => 4],
+        ];
+
+        foreach ($homeStats as $stat) {
+            HomeStat::updateOrCreate(['label' => $stat['label']], $stat);
+        }
+
+        $schedules = [
+            ['title' => 'Penimbangan Balita Bulanan', 'category' => 'Penimbangan', 'schedule_date' => now()->addDays(5), 'start_time' => '08:00', 'end_time' => '11:00', 'location' => 'Balai Warga RW 03', 'accent' => 'primary', 'sort_order' => 1],
+            ['title' => 'Imunisasi Dasar', 'category' => 'Imunisasi', 'schedule_date' => now()->addDays(12), 'start_time' => '09:00', 'end_time' => '12:00', 'location' => 'Puskesmas Pembantu', 'accent' => 'tertiary', 'sort_order' => 2],
+        ];
+
+        foreach ($schedules as $schedule) {
+            Schedule::updateOrCreate(['title' => $schedule['title']], $schedule);
         }
     }
 }

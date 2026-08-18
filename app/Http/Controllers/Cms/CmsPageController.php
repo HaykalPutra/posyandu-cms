@@ -190,6 +190,19 @@ class CmsPageController extends Controller
         }
     }
 
+    /**
+     * Slugs for the core pages the public site depends on (Beranda, Berita,
+     * Galeri, dst). These may never be deleted - only unpublished via the
+     * "is_published" toggle on the edit form - otherwise the homepage and
+     * other public routes that assume they exist would break.
+     *
+     * @return list<string>
+     */
+    private function protectedSlugs(): array
+    {
+        return array_keys($this->defaultPages());
+    }
+
     private function pageSpecificRules(string $slug): array
     {
         return match ($slug) {
@@ -513,12 +526,27 @@ class CmsPageController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * Core pages (protectedSlugs) can never be deleted - deleting "beranda"
+     * for example would break the public homepage since many parts of the
+     * site assume it always exists. Admins can still hide a core page from
+     * the public site by turning off "is_published" on the edit form.
+     *
+     * Non-core pages are soft-deleted (moved to Sampah) rather than removed
+     * outright, and their hero image is left alone until a permanent delete
+     * from Sampah.
      */
     public function destroy(string $id)
     {
         $page = CmsPage::findOrFail($id);
-        $this->deleteDatabaseMedia($page->hero_media_asset_id);
+
+        if (in_array($page->slug, $this->protectedSlugs(), true)) {
+            return redirect()->route('cms.pages.index')
+                ->with('error', 'Halaman inti "' . $page->nav_label . '" tidak boleh dihapus karena dipakai di tampilan utama situs. Nonaktifkan saja lewat tombol Edit jika ingin disembunyikan dari publik.');
+        }
+
         $page->delete();
-        return redirect()->route('cms.pages.index')->with('success', 'Halaman CMS berhasil dihapus.');
+
+        return redirect()->route('cms.pages.index')->with('success', 'Halaman CMS berhasil dipindahkan ke Sampah.');
     }
 }

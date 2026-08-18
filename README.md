@@ -1,59 +1,109 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Posyandu Palem — Website & CMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website profil Posyandu (Beranda, Berita, Galeri, Dokumentasi, Struktur, Tentang, Lokasi) dengan panel admin (CMS) berbasis Laravel untuk mengelola seluruh konten tanpa perlu edit kode.
 
-## About Laravel
+## Kebutuhan Sistem
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Composer
+- Node.js 18+ dan npm
+- MySQL (atau database lain yang didukung Laravel)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Instalasi Awal
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+composer install
+npm install
+copy .env.example .env        # di Windows PowerShell: Copy-Item .env.example .env
+php artisan key:generate
+```
 
-## Learning Laravel
+Edit `.env` dan sesuaikan koneksi database:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=posyandu_palem
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Buat database `posyandu_palem` di MySQL, lalu jalankan migrasi dan seeder:
 
-## Laravel Sponsors
+```bash
+php artisan migrate --seed
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Wajib dijalankan supaya upload gambar (foto berita, galeri, logo) bisa tampil di browser:
 
-### Premium Partners
+```bash
+php artisan storage:link
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Build asset front-end (Tailwind CSS via Vite, wajib dilakukan minimal sekali dan setiap kali CSS/JS diubah):
 
-## Contributing
+```bash
+npm run build
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Untuk mode pengembangan dengan hot-reload:
 
-## Code of Conduct
+```bash
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Jalankan server lokal:
 
-## Security Vulnerabilities
+```bash
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Buka `http://127.0.0.1:8000`.
 
-## License
+## Login Admin (CMS)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- URL: `http://127.0.0.1:8000/cms/login`
+- ID Admin default: `admin`
+- Password default: `admin123`
+
+**Segera ganti password default ini setelah login pertama kali** lewat menu **Profil** di CMS. Kalau lupa password, gunakan tautan "Lupa password?" di halaman login (link reset dikirim ke email admin yang terdaftar; saat `MAIL_MAILER=log`, link tersebut bisa dilihat di `storage/logs/laravel.log`).
+
+## Struktur CMS
+
+- **Halaman** — kelola judul, subjudul, isi teks, dan gambar hero untuk tiap halaman (Beranda, Berita, Galeri, Dokumentasi, Struktur, Tentang, Lokasi).
+- **Berita** — kelola artikel berita beserta foto cover, kategori, dan status publish.
+- **Galeri** — kelola foto dokumentasi kegiatan.
+- **Pengaturan Situs** — nama situs, kontak, nomor WhatsApp, dan footer.
+- **Profil** — ubah ID admin dan password.
+
+## Deploy ke Produksi (Wajib Diperhatikan)
+
+Sebelum go-live, pastikan `.env` di server produksi diset:
+
+```
+APP_ENV=production
+APP_DEBUG=false
+```
+
+`APP_DEBUG=true` di production membocorkan stack trace, path server, dan query SQL ke publik saat terjadi error — jangan sampai kepasang di server live.
+
+Langkah build produksi:
+
+```bash
+composer install --optimize-autoloader --no-dev
+npm install
+npm run build
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+## Catatan Keamanan
+
+- Rate limiting sudah aktif di login CMS (`throttle:5,1`) dan permintaan reset password (`throttle:3,1`), untuk mencegah brute-force.
+- Halaman error 404/403 sudah kustom (lihat `resources/views/errors/`).
+- Upload gambar divalidasi sebagai tipe `image` dengan batas ukuran maksimum.
+

@@ -111,12 +111,15 @@ class GalleryItemController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * Soft delete - moves to Sampah. Image is only purged on a permanent
+     * delete from Sampah, so a restored item still has its photo.
      */
     public function destroy(string $id)
     {
         $item = GalleryItem::findOrFail($id);
-        $this->deleteDatabaseMedia($item->image_media_asset_id);
         $item->delete();
-        return redirect()->route('cms.gallery.index')->with('success', 'Item galeri berhasil dihapus.');
+
+        return redirect()->route('cms.gallery.index')->with('success', 'Item galeri berhasil dipindahkan ke Sampah.');
     }
 }

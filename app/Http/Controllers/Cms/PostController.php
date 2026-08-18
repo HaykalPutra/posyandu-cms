@@ -111,12 +111,17 @@ class PostController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * This is now a SOFT delete (Post uses the SoftDeletes trait) - the
+     * record moves to Sampah instead of being wiped immediately. The cover
+     * image is intentionally left alone here; it's only purged when the
+     * post is permanently deleted from Sampah.
      */
     public function destroy(string $id)
     {
         $post = Post::findOrFail($id);
-        $this->deleteDatabaseMedia($post->cover_media_asset_id);
         $post->delete();
-        return redirect()->route('cms.posts.index')->with('success', 'Berita berhasil dihapus.');
+
+        return redirect()->route('cms.posts.index')->with('success', 'Berita berhasil dipindahkan ke Sampah.');
     }
 }

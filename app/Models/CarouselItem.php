@@ -6,25 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class GalleryItem extends Model
+class CarouselItem extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
         'title',
-        'description',
+        'subtitle',
         'image_url',
         'image_media_asset_id',
-        'captured_at',
-        'is_featured',
+        'link_url',
+        'is_active',
         'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
-            'captured_at' => 'date',
-            'is_featured' => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 

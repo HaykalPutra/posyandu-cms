@@ -1,11 +1,115 @@
 @import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/container-queries';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Brand colors migrated from the old CDN tailwind.config */
+    --color-on-tertiary-fixed: #390c01;
+    --color-background: #f3faff;
+    --color-on-surface: #071e27;
+    --color-surface-tint: #006b5f;
+    --color-secondary-container: #d4e6e5;
+    --color-surface-bright: #f3faff;
+    --color-on-secondary-fixed: #0e1e1e;
+    --color-inverse-surface: #1e333c;
+    --color-error: #ba1a1a;
+    --color-primary-fixed-dim: #70d8c8;
+    --color-secondary-fixed-dim: #b8cac9;
+    --color-on-tertiary-fixed-variant: #713623;
+    --color-primary-container: #008376;
+    --color-on-primary-fixed-variant: #005048;
+    --color-error-container: #ffdad6;
+    --color-surface-container-high: #d5ecf8;
+    --color-tertiary-fixed-dim: #ffb59e;
+    --color-inverse-on-surface: #dff4ff;
+    --color-on-error: #ffffff;
+    --color-surface-container-highest: #cfe6f2;
+    --color-primary: #00685d;
+    --color-secondary: #516161;
+    --color-on-background: #071e27;
+    --color-inverse-primary: #70d8c8;
+    --color-surface-container-lowest: #ffffff;
+    --color-on-primary-container: #f4fffb;
+    --color-on-tertiary: #ffffff;
+    --color-outline: #6d7a77;
+    --color-tertiary-fixed: #ffdbd0;
+    --color-on-secondary-container: #576867;
+    --color-surface: #f3faff;
+    --color-on-primary: #ffffff;
+    --color-on-primary-fixed: #00201c;
+    --color-outline-variant: #bcc9c5;
+    --color-on-surface-variant: #3d4946;
+    --color-primary-fixed: #8df5e4;
+    --color-tertiary: #8b4a36;
+    --color-surface-container: #dbf1fe;
+    --color-on-error-container: #93000a;
+    --color-surface-variant: #cfe6f2;
+    --color-surface-dim: #c7dde9;
+    --color-surface-container-low: #e6f6ff;
+    --color-secondary-fixed: #d4e6e5;
+    --color-on-secondary-fixed-variant: #3a4a49;
+    --color-on-tertiary-container: #fffbff;
+    --color-on-secondary: #ffffff;
+    --color-tertiary-container: #a8624c;
+
+    --radius: 0.25rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-full: 9999px;
+
+    --spacing-stack-lg: 48px;
+    --spacing-gutter: 24px;
+    --spacing-stack-md: 24px;
+    --spacing-container-padding-desktop: 40px;
+    --spacing-container-padding-mobile: 20px;
+    --spacing-stack-sm: 12px;
+    --spacing-base: 8px;
+
+    --font-headline-sm: 'Montserrat';
+    --font-label-md: 'Inter';
+    --font-headline-lg-mobile: 'Montserrat';
+    --font-headline-md: 'Montserrat';
+    --font-headline-lg: 'Montserrat';
+    --font-body-md: 'Inter';
+    --font-body-lg: 'Inter';
+
+    --text-headline-sm: 20px;
+    --text-headline-sm--line-height: 28px;
+    --text-headline-sm--font-weight: 600;
+
+    --text-label-md: 14px;
+    --text-label-md--line-height: 20px;
+    --text-label-md--font-weight: 600;
+
+    --text-headline-lg-mobile: 24px;
+    --text-headline-lg-mobile--line-height: 32px;
+    --text-headline-lg-mobile--font-weight: 700;
+
+    --text-headline-md: 24px;
+    --text-headline-md--line-height: 32px;
+    --text-headline-md--font-weight: 600;
+
+    --text-headline-lg: 32px;
+    --text-headline-lg--line-height: 40px;
+    --text-headline-lg--letter-spacing: -0.02em;
+    --text-headline-lg--font-weight: 700;
+
+    --text-body-md: 16px;
+    --text-body-md--line-height: 24px;
+    --text-body-md--font-weight: 400;
+
+    --text-body-lg: 18px;
+    --text-body-lg--line-height: 28px;
+    --text-body-lg--font-weight: 400;
 }
+

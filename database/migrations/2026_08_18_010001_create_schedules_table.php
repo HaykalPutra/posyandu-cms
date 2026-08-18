@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('schedules', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->string('category')->nullable();
+            $table->date('schedule_date');
+            $table->string('start_time')->nullable();
+            $table->string('end_time')->nullable();
+            $table->string('location')->nullable();
+            $table->string('accent')->default('primary');
+            $table->text('notes')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('schedules');
+    }
+};

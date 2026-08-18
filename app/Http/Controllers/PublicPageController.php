@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CarouselItem;
 use App\Models\CmsPage;
 use App\Models\GalleryItem;
+use App\Models\HomeStat;
 use App\Models\Post;
+use App\Models\Schedule;
 
 class PublicPageController extends Controller
 {
@@ -17,16 +20,6 @@ class PublicPageController extends Controller
                 'primary_cta_url' => '#jadwal',
                 'secondary_cta_label' => 'Pelajari Lebih Lanjut',
                 'secondary_cta_url' => '#tentang',
-                'stats' => [
-                    ['value' => '150+', 'label' => 'Balita Terdaftar'],
-                    ['value' => '12', 'label' => 'Kader Aktif'],
-                    ['value' => '2x', 'label' => 'Kunjungan Bulanan'],
-                    ['value' => '98%', 'label' => 'Cakupan Imunisasi'],
-                ],
-                'schedules' => [
-                    ['type' => 'Penimbangan', 'date' => '15 Okt', 'location' => 'Balai Warga RW 03', 'time' => '08:00 - 11:00 WIB', 'accent' => 'primary'],
-                    ['type' => 'Imunisasi', 'date' => '22 Okt', 'location' => 'Puskesmas Pembantu', 'time' => '09:00 - 12:00 WIB', 'accent' => 'tertiary'],
-                ],
             ],
             'lokasi' => [
                 'address' => "Jl. Kesehatan Lingkungan No. 12\nKelurahan Sehat Makmur\nKecamatan Peduli, Jakarta 12345",
@@ -81,12 +74,55 @@ class PublicPageController extends Controller
             ->take(3)
             ->get();
 
-        return view('views.pages.beranda', compact('page', 'latestPosts'));
+        $carouselSlides = CarouselItem::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        $homeStats = HomeStat::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        $upcomingSchedules = Schedule::query()
+            ->where('is_active', true)
+            ->whereDate('schedule_date', '>=', now()->toDateString())
+            ->orderBy('schedule_date')
+            ->orderBy('sort_order')
+            ->take(4)
+            ->get();
+
+        return view('views.pages.beranda', compact(
+            'page',
+            'latestPosts',
+            'carouselSlides',
+            'homeStats',
+            'upcomingSchedules'
+        ));
     }
 
     public function berita()
     {
         $page = $this->enrichPage($this->findPageOrFallback('berita'), 'berita');
+        $search = trim((string) request('q', ''));
+
+        if ($search !== '') {
+            $results = Post::query()
+                ->where('is_published', true)
+                ->where(function ($query) use ($search): void {
+                    $query->where('title', 'like', "%{$search}%")
+                        ->orWhere('excerpt', 'like', "%{$search}%")
+                        ->orWhere('body', 'like', "%{$search}%");
+                })
+                ->orderByDesc('published_at')
+                ->get();
+
+            $featuredPosts = collect();
+            $listPosts = $results;
+
+            return view('views.pages.berita', compact('page', 'featuredPosts', 'listPosts', 'search'));
+        }
+
         $featuredPosts = Post::query()
             ->where('is_published', true)
             ->orderByDesc('published_at')
@@ -100,8 +136,25 @@ class PublicPageController extends Controller
             ->take(6)
             ->get();
 
-        return view('views.pages.berita', compact('page', 'featuredPosts', 'listPosts'));
+        return view('views.pages.berita', compact('page', 'featuredPosts', 'listPosts', 'search'));
     }
+
+    public function beritaShow(Post $post)
+    {
+        abort_unless($post->is_published, 404);
+
+        $page = $this->enrichPage($this->findPageOrFallback('berita'), 'berita');
+
+        $relatedPosts = Post::query()
+            ->where('is_published', true)
+            ->where('id', '!=', $post->id)
+            ->orderByDesc('published_at')
+            ->take(3)
+            ->get();
+
+        return view('views.pages.berita-detail', compact('page', 'post', 'relatedPosts'));
+    }
+
 
     public function galeri()
     {
