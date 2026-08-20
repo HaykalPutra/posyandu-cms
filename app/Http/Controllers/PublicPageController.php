@@ -6,6 +6,7 @@ use App\Models\CarouselItem;
 use App\Models\CmsPage;
 use App\Models\GalleryItem;
 use App\Models\HomeStat;
+use App\Models\OrgGroup;
 use App\Models\Post;
 use App\Models\Schedule;
 
@@ -29,25 +30,6 @@ class PublicPageController extends Controller
                 'transport_notes' => [
                     '5 menit jalan kaki dari Halte Busway Sehat.',
                     'Tersedia area parkir untuk motor dan sepeda.',
-                ],
-            ],
-            'struktur' => [
-                'supervisor_name' => 'Puskesmas Kecamatan',
-                'supervisor_role' => 'Puskesmas Pembina',
-                'supervisor_badge' => 'Instansi Pembina',
-                'supervisor_image' => '',
-                'leader_name' => 'Ibu Siti Aminah',
-                'leader_role' => 'Ketua Posyandu',
-                'leader_image' => '',
-                'midwife_name' => 'Bidan Rini, Amd.Keb',
-                'midwife_role' => 'Bidan Desa',
-                'midwife_image' => '',
-                'cadres_title' => 'Tim Kader Posyandu',
-                'cadres' => [
-                    ['name' => 'Ibu Wati', 'role' => 'Kader Pendaftaran', 'image' => ''],
-                    ['name' => 'Ibu Ningsih', 'role' => 'Kader Penimbangan', 'image' => ''],
-                    ['name' => 'Ibu Yuli', 'role' => 'Kader Pencatatan', 'image' => ''],
-                    ['name' => 'Ibu Ratna', 'role' => 'Kader Penyuluhan', 'image' => ''],
                 ],
             ],
             default => [],
@@ -192,6 +174,14 @@ class PublicPageController extends Controller
                 ->orderByDesc('is_featured')
                 ->orderBy('sort_order')
                 ->take(12)
+                ->get();
+        }
+
+        if ($slug === 'struktur') {
+            $data['orgGroups'] = OrgGroup::query()
+                ->where('is_active', true)
+                ->with(['members' => fn ($query) => $query->where('is_active', true)])
+                ->orderBy('sort_order')
                 ->get();
         }
 

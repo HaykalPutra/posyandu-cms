@@ -23,10 +23,17 @@
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
 <!-- Map Card -->
-<div class="lg:col-span-8 bg-surface-container-lowest rounded-xl shadow-soft overflow-hidden h-[400px] lg:h-[600px] relative">
+<div class="lg:col-span-8 flex flex-col gap-stack-md">
+@if(!empty($meta['maps_embed']))
+<div class="bg-surface-container-lowest rounded-xl shadow-soft overflow-hidden h-[320px] lg:h-[380px] relative">
+<iframe src="{{ $meta['maps_embed'] }}" class="w-full h-full" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" title="Peta Lokasi {{ $page->title }}"></iframe>
+</div>
+@endif
+<div class="bg-surface-container-lowest rounded-xl shadow-soft overflow-hidden {{ !empty($meta['maps_embed']) ? 'h-[220px] lg:h-[260px]' : 'h-[400px] lg:h-[600px]' }} relative">
 <img class="w-full h-full object-cover" src="{{ $page->heroImageSrc() ?: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBIYIhqPneUQGdH4PFmzKpYguXx0pBMu_xAG-JSExB8bi_Nm0Ux_A9X4atHuqUY7mCyEDnw-b-U1A4BLI2eamac4G8SrtoF8BHIY_yl-JYDhlSE6MykxWpZN0mlditbAFOR_cn0EXF7t8VT-zhMIQMfDtJh6AsUfYoU_2Gzfb7HZk2XXuLiZoC7ChI9rJJ5ldwuagQo7ACGtkHx6mx5yZkyY0Iu6fECIcMqu7nn3fwSRLa3Ht7PyuX6uQ' }}" alt="{{ $page->title }}"/>
 <!-- Overlay Gradient for better integration -->
 <div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/40 to-transparent pointer-events-none"></div>
+</div>
 </div>
 <!-- Details Card -->
 <div class="lg:col-span-4 flex flex-col gap-stack-md">

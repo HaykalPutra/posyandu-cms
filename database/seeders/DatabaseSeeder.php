@@ -6,6 +6,8 @@ use App\Models\CarouselItem;
 use App\Models\CmsPage;
 use App\Models\GalleryItem;
 use App\Models\HomeStat;
+use App\Models\OrgGroup;
+use App\Models\OrgMember;
 use App\Models\Post;
 use App\Models\Schedule;
 use App\Models\User;
@@ -97,6 +99,64 @@ class DatabaseSeeder extends Seeder
 
         foreach ($schedules as $schedule) {
             Schedule::updateOrCreate(['title' => $schedule['title']], $schedule);
+        }
+
+        $orgGroups = [
+            [
+                'group' => [
+                    'title' => 'Pos Pelayanan Terpadu Palem Kelurahan Rancabolang',
+                    'description' => 'Tahun 2026 - 2031 · SK Lurah Rancabolang No. 31 Tahun 2026',
+                    'sort_order' => 1,
+                ],
+                'members' => [
+                    ['name' => 'Eva Nurlaelasari', 'position' => 'Ketua'],
+                    ['name' => 'Nurlela', 'position' => 'Sekretaris'],
+                    ['name' => 'Betty Suryanti', 'position' => 'Bendahara'],
+                    ['name' => 'Heddy Setiawan', 'position' => 'Ketua Bidang Pendidikan'],
+                    ['name' => 'Hetti Lasmanawati', 'position' => 'Kader Bidang Pendidikan'],
+                    ['name' => 'Ela Komala', 'position' => 'Ketua Bidang Kesehatan'],
+                    ['name' => 'Gina Pratiwi', 'position' => 'Kader Bidang Kesehatan'],
+                    ['name' => 'Srie Gozali', 'position' => 'Ketua Bidang Pekerjaan Umum'],
+                    ['name' => 'Akbar Asdema', 'position' => 'Kader Bidang Pekerjaan Umum'],
+                    ['name' => 'Yossi Grania', 'position' => 'Ketua Bidang Sosial'],
+                    ['name' => 'Imas Setiawati', 'position' => 'Kader Bidang Sosial'],
+                    ['name' => 'Akhmad Riyadi', 'position' => 'Ketua Bidang Ketentraman, Ketertiban Umum dan Perlindungan Masyarakat'],
+                    ['name' => 'A.Rahman', 'position' => 'Kader Bidang Ketentraman, Ketertiban Umum dan Perlindungan Masyarakat'],
+                    ['name' => 'Edi Kusnadi', 'position' => 'Ketua Bidang Perumahan Rakyat'],
+                    ['name' => 'Sartiman Kistanto', 'position' => 'Kader Bidang Perumahan Rakyat'],
+                ],
+            ],
+            [
+                'group' => [
+                    'title' => 'Pengurus Posyandu Palem RW.09',
+                    'description' => 'Kelurahan Rancabolang, Kecamatan Gedebage, Kota Bandung · SK Lurah Rancabolang No. 31 Tahun 2026',
+                    'sort_order' => 2,
+                ],
+                'members' => [
+                    ['name' => 'Eva Nurlaelasari', 'position' => 'Ketua'],
+                    ['name' => 'Nurlela', 'position' => 'Sekretaris'],
+                    ['name' => 'Betty Suryanti', 'position' => 'Bendahara'],
+                    ['name' => 'Ela Komala', 'position' => 'Anggota'],
+                    ['name' => 'Yossi Grania', 'position' => 'Anggota'],
+                    ['name' => 'Imas Setiawati', 'position' => 'Anggota'],
+                    ['name' => 'Febrianti', 'position' => 'Anggota'],
+                    ['name' => 'Astrid Dewi Shinta', 'position' => 'Anggota'],
+                    ['name' => 'Yuyun Yulianti', 'position' => 'Anggota'],
+                    ['name' => 'Harmeiny Lubis', 'position' => 'Anggota'],
+                    ['name' => 'Gina Pratiwi', 'position' => 'Anggota'],
+                ],
+            ],
+        ];
+
+        foreach ($orgGroups as $entry) {
+            $group = OrgGroup::updateOrCreate(['title' => $entry['group']['title']], $entry['group']);
+
+            foreach ($entry['members'] as $index => $member) {
+                OrgMember::updateOrCreate(
+                    ['org_group_id' => $group->id, 'name' => $member['name'], 'position' => $member['position']],
+                    ['org_group_id' => $group->id, 'name' => $member['name'], 'position' => $member['position'], 'sort_order' => $index + 1]
+                );
+            }
         }
     }
 }

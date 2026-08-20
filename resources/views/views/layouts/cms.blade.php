@@ -340,6 +340,9 @@
                 <a href="{{ route('cms.gallery.index') }}" class="nav-link {{ request()->routeIs('cms.gallery.*') ? 'active' : '' }}" title="Galeri">
                     <span class="material-symbols-outlined">photo_library</span><span class="nav-label">Galeri</span>
                 </a>
+                <a href="{{ route('cms.struktur.index') }}" class="nav-link {{ request()->routeIs('cms.struktur.*') ? 'active' : '' }}" title="Struktur Organisasi">
+                    <span class="material-symbols-outlined">groups</span><span class="nav-label">Struktur Organisasi</span>
+                </a>
                 <a href="{{ route('cms.carousel.index') }}" class="nav-link {{ request()->routeIs('cms.carousel.*') ? 'active' : '' }}" title="Carousel Beranda">
                     <span class="material-symbols-outlined">view_carousel</span><span class="nav-label">Carousel Beranda</span>
                 </a>

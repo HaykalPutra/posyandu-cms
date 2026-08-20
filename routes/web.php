@@ -6,6 +6,8 @@ use App\Http\Controllers\Cms\CmsPageController;
 use App\Http\Controllers\Cms\DashboardController;
 use App\Http\Controllers\Cms\GalleryItemController;
 use App\Http\Controllers\Cms\HomeStatController;
+use App\Http\Controllers\Cms\OrgGroupController;
+use App\Http\Controllers\Cms\OrgMemberController;
 use App\Http\Controllers\Cms\PasswordResetController;
 use App\Http\Controllers\Cms\PostController;
 use App\Http\Controllers\Cms\ScheduleController;
@@ -49,6 +51,13 @@ Route::prefix('cms')->name('cms.')->group(function (): void {
 		Route::resource('/carousel', CarouselItemController::class)->except(['show']);
 		Route::resource('/schedules', ScheduleController::class)->except(['show']);
 		Route::resource('/home-stats', HomeStatController::class)->except(['show']);
+		Route::resource('/struktur', OrgGroupController::class)->except(['show']);
+		Route::get('/struktur/{group}/members', [OrgMemberController::class, 'index'])->name('struktur.members.index');
+		Route::get('/struktur/{group}/members/create', [OrgMemberController::class, 'create'])->name('struktur.members.create');
+		Route::post('/struktur/{group}/members', [OrgMemberController::class, 'store'])->name('struktur.members.store');
+		Route::get('/struktur/{group}/members/{member}/edit', [OrgMemberController::class, 'edit'])->name('struktur.members.edit');
+		Route::put('/struktur/{group}/members/{member}', [OrgMemberController::class, 'update'])->name('struktur.members.update');
+		Route::delete('/struktur/{group}/members/{member}', [OrgMemberController::class, 'destroy'])->name('struktur.members.destroy');
 
 		Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
 		Route::post('/trash/{type}/{id}/restore', [TrashController::class, 'restore'])->name('trash.restore');

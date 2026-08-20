@@ -59,7 +59,7 @@
 </div>
 <!-- Load More -->
 <div class="mt-stack-lg flex justify-center">
-<span class="border-2 border-primary/30 text-primary px-8 py-3 rounded-full font-label-md text-label-md bg-surface">{{ $meta['footer_note'] ?? 'Kelola foto dari CMS Galeri' }}</span>
+<span class="border-2 border-primary/30 text-primary px-8 py-3 rounded-full font-label-md text-label-md bg-surface">{{ $meta['footer_note'] ?? '-' }}</span>
 </div>
 </main>
 @include('views.partials.public-footer')

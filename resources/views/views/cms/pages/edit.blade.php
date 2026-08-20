@@ -193,7 +193,12 @@
                 <div class="grid" style="grid-template-columns:1fr 1fr;">
                     <div style="grid-column:1/-1;"><label>Alamat Lengkap</label><textarea name="meta_address" style="min-height:110px;">{{ old('meta_address', $meta['address'] ?? '') }}</textarea></div>
                     <div><label>Nomor Telepon</label><input type="text" name="meta_phone" value="{{ old('meta_phone', $meta['phone'] ?? '') }}"></div>
-                    <div><label>Link Google Maps</label><input type="text" name="meta_maps_url" value="{{ old('meta_maps_url', $meta['maps_url'] ?? '') }}"></div>
+                    <div><label>Link Google Maps (tombol "Buka di Google Maps")</label><input type="text" name="meta_maps_url" value="{{ old('meta_maps_url', $meta['maps_url'] ?? '') }}" placeholder="https://maps.app.goo.gl/..."></div>
+                    <div style="grid-column:1/-1;">
+                        <label>Kode Embed Peta (opsional)</label>
+                        <textarea name="meta_maps_embed" style="min-height:90px;font-family:monospace;font-size:12.5px;" placeholder="Tempel di sini kode <iframe> dari Google Maps &rarr; Bagikan &rarr; Sematkan peta">{{ old('meta_maps_embed', $meta['maps_embed'] ?? '') }}</textarea>
+                        <p style="margin:6px 0 0;font-size:12.5px;color:#607285;">Buka Google Maps &rarr; cari lokasi &rarr; Bagikan &rarr; tab "Sematkan peta" &rarr; Salin HTML &rarr; tempel utuh di sini. Kalau diisi, peta live akan muncul di atas foto lokasi. Kosongkan untuk memakai foto saja.</p>
+                    </div>
                     <div style="grid-column:1/-1;"><label>Jadwal Operasional</label><textarea name="meta_schedule" style="min-height:90px;">{{ old('meta_schedule', $meta['schedule'] ?? '') }}</textarea></div>
                 </div>
                 <h3 style="margin:14px 0 8px;">Catatan Transportasi</h3>
@@ -205,38 +210,9 @@
 
         @if($page->slug === 'struktur')
             <div class="panel" style="grid-column:1/-1;background:#f8fbfd;">
-                <h2 style="margin:0 0 12px;">Pengaturan Khusus Struktur</h2>
-                <div class="grid" style="grid-template-columns:1fr 1fr;">
-                    <div><label>Nama Pembina</label><input type="text" name="meta_supervisor_name" value="{{ old('meta_supervisor_name', $meta['supervisor_name'] ?? '') }}"></div>
-                    <div><label>Jabatan Pembina</label><input type="text" name="meta_supervisor_role" value="{{ old('meta_supervisor_role', $meta['supervisor_role'] ?? '') }}"></div>
-                    <div><label>Badge Pembina</label><input type="text" name="meta_supervisor_badge" value="{{ old('meta_supervisor_badge', $meta['supervisor_badge'] ?? '') }}"></div>
-                    <div><label>Foto Pembina (URL)</label><input type="text" name="meta_supervisor_image" value="{{ old('meta_supervisor_image', $meta['supervisor_image'] ?? '') }}"></div>
-                    <div><label>Upload Foto Pembina</label><input type="file" name="meta_supervisor_image_file" accept="image/*"></div>
-                    <div><label>Nama Ketua</label><input type="text" name="meta_leader_name" value="{{ old('meta_leader_name', $meta['leader_name'] ?? '') }}"></div>
-                    <div><label>Jabatan Ketua</label><input type="text" name="meta_leader_role" value="{{ old('meta_leader_role', $meta['leader_role'] ?? '') }}"></div>
-                    <div><label>Foto Ketua (URL)</label><input type="text" name="meta_leader_image" value="{{ old('meta_leader_image', $meta['leader_image'] ?? '') }}"></div>
-                    <div><label>Upload Foto Ketua</label><input type="file" name="meta_leader_image_file" accept="image/*"></div>
-                    <div><label>Nama Bidan</label><input type="text" name="meta_midwife_name" value="{{ old('meta_midwife_name', $meta['midwife_name'] ?? '') }}"></div>
-                    <div><label>Jabatan Bidan</label><input type="text" name="meta_midwife_role" value="{{ old('meta_midwife_role', $meta['midwife_role'] ?? '') }}"></div>
-                    <div><label>Foto Bidan (URL)</label><input type="text" name="meta_midwife_image" value="{{ old('meta_midwife_image', $meta['midwife_image'] ?? '') }}"></div>
-                    <div><label>Upload Foto Bidan</label><input type="file" name="meta_midwife_image_file" accept="image/*"></div>
-                    <div style="grid-column:1/-1;"><label>Judul Seksi Kader</label><input type="text" name="meta_cadres_title" value="{{ old('meta_cadres_title', $meta['cadres_title'] ?? '') }}"></div>
-                </div>
-                <h3 style="margin:14px 0 8px;">Daftar Kader</h3>
-                <div data-repeater="cadre-items">
-                @for($index = 0; $index < 6; $index++)
-                    <div class="panel" style="padding:12px;margin-bottom:10px;">
-                        <div class="grid" style="grid-template-columns:1fr 1fr;">
-                            <div><label>Nama Kader</label><input type="text" name="meta_cadre_names[]" value="{{ old('meta_cadre_names.' . $index, $meta['cadres'][$index]['name'] ?? '') }}"></div>
-                            <div><label>Jabatan Kader</label><input type="text" name="meta_cadre_roles[]" value="{{ old('meta_cadre_roles.' . $index, $meta['cadres'][$index]['role'] ?? '') }}"></div>
-                            <div style="grid-column:1/-1;"><label>Foto Kader (URL)</label><input type="text" name="meta_cadre_images[]" value="{{ old('meta_cadre_images.' . $index, $meta['cadres'][$index]['image'] ?? '') }}"></div>
-                            <div style="grid-column:1/-1;"><label>Upload Foto Kader</label><input type="file" name="meta_cadre_image_files[]" accept="image/*"></div>
-                        </div>
-                        <button type="button" class="btn btn-danger" data-remove-parent style="margin-top:8px;">Hapus Kader</button>
-                    </div>
-                @endfor
-                </div>
-                <button type="button" class="btn btn-ghost" data-add-row='{"target":"cadre-items","html":"<div class=&quot;panel&quot; style=&quot;padding:12px;margin-bottom:10px;&quot;><div class=&quot;grid&quot; style=&quot;grid-template-columns:1fr 1fr;&quot;><div><label>Nama Kader</label><input type=&quot;text&quot; name=&quot;meta_cadre_names[]&quot;></div><div><label>Jabatan Kader</label><input type=&quot;text&quot; name=&quot;meta_cadre_roles[]&quot;></div><div style=&quot;grid-column:1/-1;&quot;><label>Foto Kader (URL)</label><input type=&quot;text&quot; name=&quot;meta_cadre_images[]&quot;></div><div style=&quot;grid-column:1/-1;&quot;><label>Upload Foto Kader</label><input type=&quot;file&quot; name=&quot;meta_cadre_image_files[]&quot; accept=&quot;image/*&quot;></div></div><button type=&quot;button&quot; class=&quot;btn btn-danger&quot; data-remove-parent style=&quot;margin-top:8px;&quot;>Hapus Kader</button></div>"}'>Tambah Kader</button>
+                <h2 style="margin:0 0 8px;">Anggota &amp; Kelompok Struktur</h2>
+                <p style="margin:0 0 14px;color:#607285;font-size:13.5px;">Daftar kelompok (mis. "Pengurus Terpadu" dan "Pengurus RW.09") beserta anggotanya sekarang dikelola di menu tersendiri, bukan di sini &mdash; supaya bisa nambah/kurangi orang sebanyak apapun dan upload foto masing-masing.</p>
+                <a href="{{ route('cms.struktur.index') }}" class="btn btn-main">Kelola Struktur Organisasi &rarr;</a>
             </div>
         @endif
 

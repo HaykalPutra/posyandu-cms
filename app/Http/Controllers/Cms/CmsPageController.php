@@ -20,6 +20,29 @@ class CmsPageController extends Controller
         return route('media.show', $mediaId);
     }
 
+    /**
+     * Accepts either a full <iframe> embed snippet pasted from Google Maps'
+     * "Share > Embed a map" dialog, or a bare URL, and returns just the safe
+     * src URL to store. We deliberately never store/render the admin's raw
+     * pasted HTML - only the extracted src is kept, and the public page
+     * builds its own <iframe> around it. This keeps a mistyped or malicious
+     * paste from injecting arbitrary markup/script into the public site.
+     */
+    private function extractMapsEmbedSrc(?string $input): ?string
+    {
+        $input = trim((string) $input);
+
+        if ($input === '') {
+            return null;
+        }
+
+        if (preg_match('/src=["\']([^"\']+)["\']/i', $input, $matches)) {
+            $input = $matches[1];
+        }
+
+        return filter_var($input, FILTER_VALIDATE_URL) ? $input : null;
+    }
+
     private function defaultMetaForSlug(string $slug): array
     {
         return match ($slug) {
@@ -76,28 +99,10 @@ class CmsPageController extends Controller
                 'schedule' => "Setiap Rabu pertama setiap bulan\n08:00 - 12:00 WIB",
                 'phone' => '+62 812 3456 7890',
                 'maps_url' => 'https://maps.google.com',
+                'maps_embed' => '',
                 'transport_notes' => [
                     '5 menit jalan kaki dari Halte Busway Sehat.',
                     'Tersedia area parkir untuk motor dan sepeda.',
-                ],
-            ],
-            'struktur' => [
-                'supervisor_name' => 'Puskesmas Kecamatan',
-                'supervisor_role' => 'Puskesmas Pembina',
-                'supervisor_badge' => 'Instansi Pembina',
-                'supervisor_image' => '',
-                'leader_name' => 'Ibu Siti Aminah',
-                'leader_role' => 'Ketua Posyandu',
-                'leader_image' => '',
-                'midwife_name' => 'Bidan Rini, Amd.Keb',
-                'midwife_role' => 'Bidan Desa',
-                'midwife_image' => '',
-                'cadres_title' => 'Tim Kader Posyandu',
-                'cadres' => [
-                    ['name' => 'Ibu Wati', 'role' => 'Kader Pendaftaran', 'image' => ''],
-                    ['name' => 'Ibu Ningsih', 'role' => 'Kader Penimbangan', 'image' => ''],
-                    ['name' => 'Ibu Yuli', 'role' => 'Kader Pencatatan', 'image' => ''],
-                    ['name' => 'Ibu Ratna', 'role' => 'Kader Penyuluhan', 'image' => ''],
                 ],
             ],
             default => [],
@@ -180,10 +185,20 @@ class CmsPageController extends Controller
         ];
     }
 
+    /**
+     * Ensures every core page (beranda, berita, dst) exists in the database
+     * so the public site never 404s on a page that hasn't been touched yet.
+     *
+     * Uses firstOrCreate (NOT updateOrCreate) - this only inserts a row when
+     * one doesn't already exist for that slug. Using updateOrCreate here was
+     * a bug: it overwrote every core page back to its hardcoded default data
+     * (including meta like the Lokasi address/maps link) every single time
+     * an admin opened the Halaman list, silently discarding real edits.
+     */
     private function syncDefaultPages(): void
     {
         foreach ($this->defaultPages() as $defaultPage) {
-            CmsPage::updateOrCreate(
+            CmsPage::firstOrCreate(
                 ['slug' => $defaultPage['slug']],
                 $defaultPage
             );
@@ -265,32 +280,9 @@ class CmsPageController extends Controller
                 'meta_schedule' => ['nullable', 'string'],
                 'meta_phone' => ['nullable', 'string', 'max:80'],
                 'meta_maps_url' => ['nullable', 'string', 'max:255'],
+                'meta_maps_embed' => ['nullable', 'string', 'max:4000'],
                 'meta_transport_notes' => ['nullable', 'array'],
                 'meta_transport_notes.*' => ['nullable', 'string', 'max:180'],
-            ],
-            'struktur' => [
-                'meta_supervisor_name' => ['nullable', 'string', 'max:120'],
-                'meta_supervisor_role' => ['nullable', 'string', 'max:120'],
-                'meta_supervisor_badge' => ['nullable', 'string', 'max:80'],
-                'meta_supervisor_image' => ['nullable', 'string', 'max:2048'],
-                'meta_supervisor_image_file' => ['nullable', 'image', 'max:4096'],
-                'meta_leader_name' => ['nullable', 'string', 'max:120'],
-                'meta_leader_role' => ['nullable', 'string', 'max:120'],
-                'meta_leader_image' => ['nullable', 'string', 'max:2048'],
-                'meta_leader_image_file' => ['nullable', 'image', 'max:4096'],
-                'meta_midwife_name' => ['nullable', 'string', 'max:120'],
-                'meta_midwife_role' => ['nullable', 'string', 'max:120'],
-                'meta_midwife_image' => ['nullable', 'string', 'max:2048'],
-                'meta_midwife_image_file' => ['nullable', 'image', 'max:4096'],
-                'meta_cadres_title' => ['nullable', 'string', 'max:120'],
-                'meta_cadre_names' => ['nullable', 'array'],
-                'meta_cadre_names.*' => ['nullable', 'string', 'max:120'],
-                'meta_cadre_roles' => ['nullable', 'array'],
-                'meta_cadre_roles.*' => ['nullable', 'string', 'max:120'],
-                'meta_cadre_images' => ['nullable', 'array'],
-                'meta_cadre_images.*' => ['nullable', 'string', 'max:2048'],
-                'meta_cadre_image_files' => ['nullable', 'array'],
-                'meta_cadre_image_files.*' => ['nullable', 'image', 'max:4096'],
             ],
             default => [],
         };
@@ -370,43 +362,15 @@ class CmsPageController extends Controller
                 'schedule' => $request->input('meta_schedule'),
                 'phone' => $request->input('meta_phone'),
                 'maps_url' => $request->input('meta_maps_url'),
+                'maps_embed' => $this->extractMapsEmbedSrc($request->input('meta_maps_embed')),
                 'transport_notes' => collect($request->input('meta_transport_notes', []))
                     ->filter(fn ($item) => filled($item))
                     ->values()
                     ->all(),
             ],
-            'struktur' => [
-                'supervisor_image' => $this->resolveMetaImageUpload($request, 'meta_supervisor_image_file', 'cms/structure', $request->input('meta_supervisor_image')),
-                'supervisor_name' => $request->input('meta_supervisor_name'),
-                'supervisor_role' => $request->input('meta_supervisor_role'),
-                'supervisor_badge' => $request->input('meta_supervisor_badge'),
-                'leader_image' => $this->resolveMetaImageUpload($request, 'meta_leader_image_file', 'cms/structure', $request->input('meta_leader_image')),
-                'leader_name' => $request->input('meta_leader_name'),
-                'leader_role' => $request->input('meta_leader_role'),
-                'midwife_image' => $this->resolveMetaImageUpload($request, 'meta_midwife_image_file', 'cms/structure', $request->input('meta_midwife_image')),
-                'midwife_name' => $request->input('meta_midwife_name'),
-                'midwife_role' => $request->input('meta_midwife_role'),
-                'cadres_title' => $request->input('meta_cadres_title'),
-                'cadres' => collect($request->input('meta_cadre_names', []))
-                    ->map(function ($name, $index) use ($request) {
-                        $uploadedFiles = $request->file('meta_cadre_image_files', []);
-                        $image = $request->input('meta_cadre_images', [])[$index] ?? '';
-
-                        if (isset($uploadedFiles[$index]) && $uploadedFiles[$index]) {
-                            $image = $uploadedFiles[$index]->store('cms/structure', 'public');
-                            $image = '/storage/' . $image;
-                        }
-
-                        return [
-                            'name' => $name,
-                            'role' => $request->input('meta_cadre_roles', [])[$index] ?? '',
-                            'image' => $image,
-                        ];
-                    })
-                    ->filter(fn (array $item) => filled($item['name']) || filled($item['role']))
-                    ->values()
-                    ->all(),
-            ],
+            // Catatan: struktur organisasi kini dikelola lewat menu "Struktur
+            // Organisasi" tersendiri (model OrgGroup/OrgMember), bukan lewat
+            // meta halaman ini lagi.
             default => $meta,
         };
     }

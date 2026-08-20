@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\CarouselItem;
 use App\Models\CmsPage;
 use App\Models\GalleryItem;
+use App\Models\OrgGroup;
+use App\Models\OrgMember;
 use App\Models\Post;
 use App\Models\Schedule;
 
@@ -26,6 +28,8 @@ class TrashController extends Controller
             'gallery' => ['model' => GalleryItem::class, 'label' => 'Galeri', 'media_field' => 'image_media_asset_id', 'title_field' => 'title'],
             'carousel' => ['model' => CarouselItem::class, 'label' => 'Carousel Beranda', 'media_field' => 'image_media_asset_id', 'title_field' => 'title'],
             'schedules' => ['model' => Schedule::class, 'label' => 'Jadwal', 'media_field' => null, 'title_field' => 'title'],
+            'struktur' => ['model' => OrgGroup::class, 'label' => 'Kelompok Struktur', 'media_field' => null, 'title_field' => 'title'],
+            'struktur-anggota' => ['model' => OrgMember::class, 'label' => 'Anggota Struktur', 'media_field' => 'photo_media_asset_id', 'title_field' => 'name'],
         ];
     }
 
